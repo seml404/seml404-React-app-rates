@@ -1,4 +1,4 @@
-body {
+/* body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -10,4 +10,38 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+} */
+
+.tabs {
+  position: relative;
+}
+.tab,
+.tab-title {
+  display: inline-block;
+}
+.tab input[type="radio"] {
+  display: none;
+}
+.tab-title {
+  background: #ccc;
+  padding: 5px 10px;
+  border: 1px solid #666;
+  border-bottom: none;
+}
+.tab-content {
+  position: absolute;
+  border: 1px solid #666;
+  padding: 10px;
+  left: 0;
+  width: calc(100% - 20px);
+  display: none;
+}
+.tab :checked + .tab-title {
+  position: relative;
+  background: #fff;
+  top: 1px;
+  z-index: 1;
+}
+.tab :checked ~ .tab-content {
+  display: block;
 }
