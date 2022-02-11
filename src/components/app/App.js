@@ -1,79 +1,78 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import RatesComponent from "../RatesComponent/RatesComponent";
+import { connect } from "react-redux";
+import { toggleShowOrderWindow } from "../../store/actions";
+import OrderWindow from "../OrderWindow/OrderWindow";
 
 function App(props) {
-  let initialRates = [
-    {
-      currencyId: 1,
-      currencyName: "USD",
-      currencyRateBuy: Math.random() * 110,
-      currencyRateSell: Math.random() * 120,
-    },
-    {
-      currencyId: 2,
-      currencyName: "CAD",
-      currencyRateBuy: Math.random() * 120,
-      currencyRateSell: Math.random() * 130,
-    },
-    {
-      currencyId: 3,
-      currencyName: "RUB",
-      currencyRateBuy: Math.random() * 100,
-      currencyRateSell: Math.random() * 110,
-    },
-    {
-      currencyId: 4,
-      currencyName: "GBP",
-      currencyRateBuy: Math.random() * 130,
-      currencyRateSell: Math.random() * 140,
-    },
-  ];
-  let [currencyRates, setCurrencyRates] = useState(initialRates);
+  let { showOrderWindow, toggleShowOrderWindow } = props;
+  let [currencyRates, setCurrencyRates] = useState(defineCurrencyRates());
   let [time, setTime] = useState(renderTime());
-  let [currencyChoosen, setCurrencyChoosen] = useState(renderTime());
+  let [currencyPairChoosen, setCurrencyChoosen] = useState();
+  let [currencyPairRates, setCurrencyPairRates] = useState(
+    defineCurrencyPairRates("USD/CAD")
+  );
 
   function renderTime() {
     let today = new Date();
     return today.toLocaleTimeString();
   }
 
+  function defineCurrencyPairRates(pair) {
+    return currencyRates.find((item) => item.currencyPair === pair)
+      .currencyRates;
+  }
+
   function defineCurrencyRates() {
     return [
       {
-        currencyId: 1,
-        currencyName: "USD",
-        currencyRateBuy: Math.random() * 110,
-        currencyRateSell: Math.random() * 120,
+        currencyPairId: 1,
+        currencyPair: "USD/CAD",
+        currencyRates: {
+          currencyRateBuy: (Math.random() * 120).toFixed(2),
+          currencyRateSell: (Math.random() * 130).toFixed(2),
+        },
       },
       {
-        currencyId: 2,
-        currencyName: "CAD",
-        currencyRateBuy: Math.random() * 120,
-        currencyRateSell: Math.random() * 130,
+        currencyPairId: 2,
+        currencyPair: "USD/RUB",
+        currencyRates: {
+          currencyRateBuy: (Math.random() * 130).toFixed(2),
+          currencyRateSell: (Math.random() * 140).toFixed(2),
+        },
       },
       {
-        currencyId: 3,
-        currencyName: "RUB",
-        currencyRateBuy: Math.random() * 100,
-        currencyRateSell: Math.random() * 110,
-      },
-      {
-        currencyId: 4,
-        currencyName: "GBP",
-        currencyRateBuy: Math.random() * 130,
-        currencyRateSell: Math.random() * 140,
+        currencyPairId: 3,
+        currencyPair: "GBP/USD",
+        currencyRates: {
+          currencyRateBuy: (Math.random() * 160).toFixed(2),
+          currencyRateSell: (Math.random() * 170).toFixed(2),
+        },
       },
     ];
   }
+
+  function updateRates() {
+    setCurrencyRates(defineCurrencyRates());
+  }
+
+  useMemo(defineCurrencyRates, [props]);
 
   useEffect(() => {
     setInterval(() => {
       setTime(renderTime());
     }, 1000);
     setInterval(() => {
-      setCurrencyRates(defineCurrencyRates());
-    }, 6000);
-  }, [props]);
+      setCurrencyRates(() => {
+        return defineCurrencyRates();
+      });
+    }, 60000);
+  }, []);
+
+  useEffect(() => {
+    let value = currencyPairChoosen ? currencyPairChoosen : "USD/CAD";
+    setCurrencyPairRates(defineCurrencyPairRates(value));
+  }, [currencyRates]);
 
   function renderCurrencyOptions() {
     let pairs = [
@@ -95,42 +94,69 @@ function App(props) {
   }
 
   function handleCurrencyChoose(e) {
-    console.log(e);
+    setCurrencyPairRates(defineCurrencyPairRates(e.target.value.slice(0, 7)));
   }
   function handleShowInfo(e) {
-    console.log(currencyRates);
+    console.log(currencyPairRates);
+  }
+
+  function handleRateClick() {
+    console.log("wo");
+    toggleShowOrderWindow();
   }
 
   return (
     <div className="App">
-      <button onClick={handleShowInfo}></button>
-      <div className="tabs">
-        <div className="tab">
-          <input type="radio" id="tab1" name="tab-group" defaultChecked></input>
-          <label htmlFor="tab1" className="tab-title">
-            Вкладка 1
-          </label>
-          <section className="tab-content">
-            <div>{time}</div>
-            <select
-              value={currencyChoosen}
-              onChange={(e) => handleCurrencyChoose(e)}
-            >
-              {renderCurrencyOptions()}
-            </select>
-            <RatesComponent></RatesComponent>
-          </section>
-        </div>
-        <div className="tab">
-          <input type="radio" id="tab2" name="tab-group"></input>
-          <label htmlFor="tab2" className="tab-title">
-            Вкладка 2
-          </label>
-          <section className="tab-content">Два</section>
+      <div className="container">
+        {" "}
+        <button onClick={handleShowInfo}></button>
+        <div className="tabs">
+          <div className="tab">
+            <input
+              type="radio"
+              id="tab1"
+              name="tab-group"
+              defaultChecked
+            ></input>
+            <label htmlFor="tab1" className="tab-title">
+              Вкладка 1
+            </label>
+            <section className="tab-content">
+              <div>{time}</div>
+              <select
+                value={currencyPairChoosen}
+                onChange={(e) => handleCurrencyChoose(e)}
+              >
+                {renderCurrencyOptions()}
+              </select>
+              <RatesComponent
+                currencyRates={currencyPairRates}
+                handleRateClick={handleRateClick}
+              ></RatesComponent>
+            </section>
+          </div>
+          <div className="tab">
+            <input type="radio" id="tab2" name="tab-group"></input>
+            <label htmlFor="tab2" className="tab-title">
+              Вкладка 2
+            </label>
+            <section className="tab-content">Два</section>
+          </div>
+          {showOrderWindow && <OrderWindow></OrderWindow>}
         </div>
       </div>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    showOrderWindow: state.showOrderWindow,
+  };
+};
+
+const mapDispatchToProps = {
+  toggleShowOrderWindow,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
