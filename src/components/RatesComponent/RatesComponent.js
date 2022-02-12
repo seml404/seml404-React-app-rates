@@ -9,11 +9,15 @@ export default function RatesComponent(props) {
       <div className="rates-wrapper">
         <div className="rates-item rates-item-buy">
           <p>BUY</p>
-          <div onClick={() => handleRateClick()}>{currencyRateBuy}</div>
+          <div className="rates-item-buy" onClick={(e) => handleRateClick(e)}>
+            {currencyRateBuy}
+          </div>
         </div>
         <div className="rates-item rates-item-sell">
           <p>SELL</p>
-          <div onClick={() => handleRateClick()}>{currencyRateSell}</div>
+          <div className="rates-item-sell" onClick={(e) => handleRateClick(e)}>
+            {currencyRateSell}
+          </div>
         </div>
       </div>
     </>

@@ -3,15 +3,17 @@ import RatesComponent from "../RatesComponent/RatesComponent";
 import { connect } from "react-redux";
 import { toggleShowOrderWindow } from "../../store/actions";
 import OrderWindow from "../OrderWindow/OrderWindow";
+import ArchiveComponent from "../ArchiveComponent/ArchiveComponent";
 
 function App(props) {
   let { showOrderWindow, toggleShowOrderWindow } = props;
   let [currencyRates, setCurrencyRates] = useState(defineCurrencyRates());
   let [time, setTime] = useState(renderTime());
-  let [currencyPairChoosen, setCurrencyChoosen] = useState();
+  let [currencyPairChoosen, setCurrencyPairChoosen] = useState("USD/CAD_TOM");
   let [currencyPairRates, setCurrencyPairRates] = useState(
     defineCurrencyPairRates("USD/CAD")
   );
+  let [mainDealDetails, setMainDealDetails] = useState();
 
   function renderTime() {
     let today = new Date();
@@ -52,10 +54,6 @@ function App(props) {
     ];
   }
 
-  function updateRates() {
-    setCurrencyRates(defineCurrencyRates());
-  }
-
   useMemo(defineCurrencyRates, [props]);
 
   useEffect(() => {
@@ -70,7 +68,9 @@ function App(props) {
   }, []);
 
   useEffect(() => {
-    let value = currencyPairChoosen ? currencyPairChoosen : "USD/CAD";
+    let value = currencyPairChoosen
+      ? currencyPairChoosen.slice(0, 7)
+      : "USD/CAD";
     setCurrencyPairRates(defineCurrencyPairRates(value));
   }, [currencyRates]);
 
@@ -94,14 +94,22 @@ function App(props) {
   }
 
   function handleCurrencyChoose(e) {
+    setCurrencyPairChoosen(() => e.target.value);
     setCurrencyPairRates(defineCurrencyPairRates(e.target.value.slice(0, 7)));
   }
   function handleShowInfo(e) {
     console.log(currencyPairRates);
   }
 
-  function handleRateClick() {
-    console.log("wo");
+  function handleRateClick(e) {
+    console.log(e);
+    let type = e.target.classList.contains("rates-item-buy") ? "buy" : "sell";
+    let details = {
+      dealType: type,
+      dealPrice: e.target.innerHTML,
+      dealInstrument: currencyPairChoosen,
+    };
+    setMainDealDetails(details);
     toggleShowOrderWindow();
   }
 
@@ -140,9 +148,13 @@ function App(props) {
             <label htmlFor="tab2" className="tab-title">
               Вкладка 2
             </label>
-            <section className="tab-content">Два</section>
+            <section className="tab-content">
+              <ArchiveComponent></ArchiveComponent>
+            </section>
           </div>
-          {showOrderWindow && <OrderWindow></OrderWindow>}
+          {showOrderWindow && (
+            <OrderWindow mainDealDetails={mainDealDetails}></OrderWindow>
+          )}
         </div>
       </div>
     </div>

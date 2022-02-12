@@ -43,7 +43,7 @@ a {
 .container {
   margin: 0 auto;
   width: 500px;
-  height: 200px;
+  min-height: 200px;
 }
 
 /* tabs */
@@ -128,4 +128,30 @@ a {
 .input-wrapper,
 .buttons-wrapper {
   display: flex;
+}
+
+.btn-close {
+  background: none;
+  color: #000;
+}
+
+/* archive */
+
+.archive-top,
+.archive-deal-item {
+  display: flex;
+  gap: 5px;
+  font-size: 10pt;
+}
+
+.archive-deal-item {
+  text-align: center;
+}
+
+.archive-text-small {
+  width: 10%;
+}
+
+.archive-text-big {
+  width: 20%;
 }

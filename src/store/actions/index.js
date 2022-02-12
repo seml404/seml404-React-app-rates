@@ -5,4 +5,11 @@ const toggleShowOrderWindow = (typeOfChange) => {
   };
 };
 
-export { toggleShowOrderWindow };
+const addDeal = (dealDetails) => {
+  return {
+    type: "ADD_DEAL",
+    dealDetails: dealDetails,
+  };
+};
+
+export { toggleShowOrderWindow, addDeal };

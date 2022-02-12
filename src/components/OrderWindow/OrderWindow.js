@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { toggleShowOrderWindow } from "../../store/actions";
+import { toggleShowOrderWindow, addDeal } from "../../store/actions";
 
 function OrderWindow(props) {
-  const { toggleShowOrderWindow } = props;
+  const { toggleShowOrderWindow, mainDealDetails, addDeal } = props;
   let [bidDetails, setBidDetails] = useState("");
+  let [volumeOfDeal, setVolumeOfDeal] = useState("");
 
   function handleWindowClick(e) {
     if (e.target.classList.contains("order-window-wrapper")) {
@@ -14,6 +15,15 @@ function OrderWindow(props) {
 
   function handleBtnClick(e) {
     if (e.target.textContent === "Cancel") {
+      toggleShowOrderWindow();
+    }
+    if (volumeOfDeal) {
+      addDeal({
+        ...mainDealDetails,
+        volumeOfDeal: volumeOfDeal,
+        dateOfDeal: new Date().toLocaleString(),
+        dealId: Math.random(),
+      });
       toggleShowOrderWindow();
     }
   }
@@ -27,7 +37,12 @@ function OrderWindow(props) {
         <div className="order-window">
           <div className="order-window-top">
             <p>Make order</p>
-            <div>&#10006;</div>
+            <button
+              className="btn btn-close"
+              onClick={() => toggleShowOrderWindow()}
+            >
+              &#10006;
+            </button>
           </div>
           <div className="order-window-details">
             <p className="order-window-type"></p>
@@ -35,8 +50,8 @@ function OrderWindow(props) {
           <div className="input-wrapper">
             <label>Volume</label>
             <input
-              value={bidDetails}
-              onChange={(e) => setBidDetails(e.target.value)}
+              value={volumeOfDeal}
+              onChange={(e) => setVolumeOfDeal(() => e.target.value)}
             ></input>
           </div>
           <div className="buttons-wrapper">
@@ -47,7 +62,11 @@ function OrderWindow(props) {
             >
               Cancel
             </button>
-            <button type="button" className="btn btn-accept">
+            <button
+              type="button"
+              className="btn btn-accept"
+              onClick={(e) => handleBtnClick(e)}
+            >
               Ok
             </button>
           </div>
@@ -57,8 +76,15 @@ function OrderWindow(props) {
   );
 }
 
-const mapDispatchToProps = {
-  toggleShowOrderWindow,
+const mapStateToProps = (state) => {
+  return {
+    dealsList: state.dealsList,
+  };
 };
 
-export default connect(null, mapDispatchToProps)(OrderWindow);
+const mapDispatchToProps = {
+  toggleShowOrderWindow,
+  addDeal,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(OrderWindow);
