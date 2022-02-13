@@ -7,16 +7,15 @@ function OrderWindow(props) {
   let [bidDetails, setBidDetails] = useState("");
   let [volumeOfDeal, setVolumeOfDeal] = useState("");
 
+  // функция-обработчик клика по области вне модального окна
   function handleWindowClick(e) {
     if (e.target.classList.contains("order-window-wrapper")) {
       toggleShowOrderWindow();
     }
   }
 
+  // функция-обработчик кликов по кнопка Ok/Cancel
   function handleBtnClick(e) {
-    if (e.target.textContent === "Cancel") {
-      toggleShowOrderWindow();
-    }
     if (volumeOfDeal) {
       addDeal({
         ...mainDealDetails,
@@ -24,8 +23,8 @@ function OrderWindow(props) {
         dateOfDeal: new Date().toLocaleString(),
         dealId: Math.random(),
       });
-      toggleShowOrderWindow();
     }
+    toggleShowOrderWindow();
   }
 
   return (
@@ -45,7 +44,19 @@ function OrderWindow(props) {
             </button>
           </div>
           <div className="order-window-details">
-            <p className="order-window-type"></p>
+            <p
+              className={
+                mainDealDetails.dealType === "buy"
+                  ? "order-window-info buy-item"
+                  : "order-window-info sell-item"
+              }
+            >
+              {mainDealDetails.dealType}
+            </p>
+            <p className="order-window-info">{mainDealDetails.dealPrice}</p>
+            <p className="order-window-info">
+              {mainDealDetails.dealInstrument}
+            </p>
           </div>
           <div className="input-wrapper">
             <label>Volume</label>

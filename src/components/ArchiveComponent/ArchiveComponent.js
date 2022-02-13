@@ -8,7 +8,15 @@ function ArchiveComponent(props) {
       ? dealsList.map((item) => {
           return (
             <div className="archive-deal-item" key={item.dealId}>
-              <p className="archive-text archive-text-small">{item.dealType}</p>
+              <p
+                className={
+                  item.dealType === "buy"
+                    ? "archive-text archive-text-small buy-item"
+                    : "archive-text archive-text-small sell-item"
+                }
+              >
+                {item.dealType}
+              </p>
               <p className="archive-text archive-text-small">
                 {item.dealPrice}
               </p>
